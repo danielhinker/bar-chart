@@ -10,55 +10,70 @@
         <h1 id="title">Bar Chart</h1>
     
             <script type="text/javascript">
-        //     const dataset = [];
-        //     const dataset2 = [12, 31, 22, 17, 25, 18, 29, 14, 9];
-        //     const w = 1000
-        //     const h = 500
-        //     var margin = { top: 20, right: 20, bottom: 70, left: 40 },
-        //             width = 600 - margin.left - margin.right,
-        //             height = 300 - margin.top - margin.bottom;
-        // d3.select("body").append("p").text("Our First Paragraph using D3!");
+            const dataset = [];
         
-        
-        // const svg = d3.select("body").append("svg").attr("width", w).attr("height", h);
-
-        // req = new XMLHttpRequest();
-        // req.open("GET", 'https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/GDP-data.json', true);
-        // req.send();
-        // req.onload = () => {
-        //     json = JSON.parse(req.responseText);
-        //     json.data.forEach((val) => { dataset.push(val[1]) })
+        const scale = d3.scaleLinear();
+        scale.domain([0, 2020]).range([0, 800]);
+        req = new XMLHttpRequest();
+        req.open("GET", 'https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/GDP-data.json', true);
+        req.send();
+        req.onload = () => {
+            json = JSON.parse(req.responseText);
+            json.data.forEach((val) => { dataset.push(val) })
         //     // console.log(dataset);
         //     // console.log(dataset[0]);
-        //     // dataset.append(json.)
-        //     svg.selectAll("rect")
-        //         .data(dataset)
-        //         .enter()
-        //         .append("rect")
-        //         .attr("x", (d, i) => i * 30)
-        //         .attr("y", (d, i) => h - 3 * d)
-        //         .attr("width", 25)
-        //         .attr("height", (d, i) => 3 * d)
-        //         .attr("fill", "navy");
-        // }
+        }
 
-       var data_values = [5, 10, 30, 8, 45, 24, 16, 55, 60];
-       data_values.sort((a, b)=>{ return a - b });
+        var data_values = [5, 10, 30, 8, 45, 24, 16, 55, 60];
+        data_values.sort((a, b)=>{ return a - b });
+        console.log(dataset);
+        console.log(dataset[2]);
 
-       var p = d3.selectAll("p").data(data_values).enter().append("p").text(function (value) { return value; });
-        p.style({ "font-size": "20px", "font-family": "arial" });
-  
-  var svg = d3.select("body").append("svg").attr("width", 450).attr("height", 400);
+        //    var p = d3.selectAll("p").data(data_values).enter().append("p").text(function (value) { return value; });
+        //     p.style({ "font-size": "20px", "font-family": "arial" });
+        const h = 400;
+        const w = 800;
+        
+        //   var max = d3.max(data_values);
+        //   var min = d3.min(data_values);
+        const padding = 60;
+        
+        const xScale = d3.scaleLinear()
+            .domain([0, d3.max(data_values)])
+            .range([padding, w - padding]);
 
-  const bars = svg.selectAll("rect").data(data_values).enter().append("rect")
-  .attr("width", 25).attr("height", (d)=>{ return d * 5 });
-  bars.attr("x", (d, i)=>{ return i * 30; });
-  bars.attr("y", (d)=>{ return 400-d*5; });
-  bars.attr("fill", "steelblue");
+        const yScale = d3.scaleLinear()
+            .domain([0, d3.max(dataset, (d) => d[0])])
+            .range([h - padding, padding]);
 
-  var max = d3.max(data_values);
-  var min = d3.min(data_values);
+        var svg = d3.select("body").append("svg").attr("width", w).attr("height", h);
 
+        const bars = svg.selectAll("rect").data(data_values).enter().append("rect")
+            .attr("width", 25).attr("height", (d) => { return d * 5 });
+        bars.attr("x", (d, i) => { return i * 30; });
+        // bars.attr("transform", "translate(0," + (h - padding) + ")");
+        bars.attr("y", (d) => { return 400 - d * 5; });
+        bars.attr("fill", "steelblue");
+
+        svg.selectAll("text")
+                .data(data_values)
+                .enter()
+                .append("text")
+                .text((d) => (d))
+                .attr("x", (d) => xScale(d))
+                .attr("y", (d) => yScale(d))
+
+        const xAxis = d3.axisBottom(xScale);
+        const yAxis = d3.axisLeft(yScale);
+
+            svg.append("g")
+                .attr("transform", "translate(0," + (h - padding) + ")")
+                .call(xAxis);
+
+            // Add your code below this line
+            svg.append("g")
+                .attr("transform", "translate(60, 0)")
+                .call(yAxis);
 
         </script>
     </body>
